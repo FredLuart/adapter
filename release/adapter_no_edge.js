@@ -1781,6 +1781,9 @@ var utils = {
       // Only shim CreateObjectURL using srcObject if srcObject exists.
       return undefined;
     }
+    if (URL.createObjectURL === undefined || URL.revokeObjectURL === undefined) {
+      return undefined;
+    }
 
     var nativeCreateObjectURL = URL.createObjectURL.bind(URL);
     var nativeRevokeObjectURL = URL.revokeObjectURL.bind(URL);
