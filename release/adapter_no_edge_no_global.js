@@ -191,7 +191,7 @@ var chromeShim = {
               var receiver;
               if (window.RTCPeerConnection.prototype.getReceivers) {
                 receiver = pc.getReceivers().find(function(r) {
-                  return r.track.id === te.track.id;
+                  return r.track && r.track.id === te.track.id;
                 });
               } else {
                 receiver = {track: te.track};
@@ -207,7 +207,7 @@ var chromeShim = {
               var receiver;
               if (window.RTCPeerConnection.prototype.getReceivers) {
                 receiver = pc.getReceivers().find(function(r) {
-                  return r.track.id === track.id;
+                  return r.track && r.track.id === track.id;
                 });
               } else {
                 receiver = {track: track};
@@ -468,7 +468,11 @@ var chromeShim = {
         // Note: we rely on the high-level addTrack/dtmf shim to
         // create the sender with a dtmf sender.
         oldStream.addTrack(track);
-        pc.dispatchEvent(new Event('negotiationneeded'));
+
+        // Trigger ONN async.
+        Promise.resolve().then(function() {
+          pc.dispatchEvent(new Event('negotiationneeded'));
+        });
       } else {
         var newStream = new window.MediaStream([track]);
         pc._streams[stream.id] = newStream;
